@@ -1,0 +1,98 @@
+/* src/include/silk_config.h.in.  Generated from configure.ac by autoheader.  */
+
+
+#ifndef _SILK_H
+#error "Do not include this file directly!.  include silk.h instead"
+#endif
+
+static char rcsID_SILK_CONFIG_H[]
+#ifdef __GNUC__
+  __attribute__((__unused__))
+#endif
+  = "configure.ac,v 1.4 2004/03/10 20:09:40 thomasm Exp";
+
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Path to root directory of packed data files */
+#undef SILK_DATA_ROOTDIR
+
+/* Define to 1 if your system has error code EPROTO */
+#undef SK_HAVE_EPROTO
+
+/* Define to 1 if your system's glob may return GLOB_ABORTED */
+#undef SK_HAVE_GLOB_ABORTED
+
+/* Define to 1 if your system's glob may return GLOB_NOMATCH */
+#undef SK_HAVE_GLOB_NOMATCH
+
+/* Define to 1 if your system provides <sys/msg.h> */
+#undef SK_HAVE_SYS_MSG_H
+
+/* Define to 1 if your system provides timegm() */
+#undef SK_HAVE_TIMEGM
+
+/* Define to 1 if your platform does not provide getopt_long_only */
+#undef SK_NEED_GETOPT
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Define to 1 if your processor stores words with the most significant byte
+   first (like Motorola and SPARC, unlike Intel and VAX). */
+#undef WORDS_BIGENDIAN
+
+/* Number of bits in a file offset, on hosts where this is settable. */
+#undef _FILE_OFFSET_BITS
+
+/* Define for large files, on AIX-style hosts. */
+#undef _LARGE_FILES
+
+
+#ifndef WORDS_BIGENDIAN
+#define IS_LITTLE_ENDIAN 1
+#define IS_BIG_ENDIAN 0
+#else
+#define IS_LITTLE_ENDIAN 0
+#define IS_BIG_ENDIAN 1
+#endif

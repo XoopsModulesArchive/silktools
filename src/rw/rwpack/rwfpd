@@ -1,0 +1,218 @@
+#!/bin/sh
+#######################################################################
+# @OPENSOURCE_HEADER_START@
+#
+# Use of the SILK system and related source code is subject to the terms 
+# of the following licenses:
+#
+# GNU Public License (GPL) Rights pursuant to Version 2, June 1991
+# Government Purpose License Rights (GPLR) pursuant to DFARS 252.225-7013
+#
+# NO WARRANTY
+#
+# ANY INFORMATION, MATERIALS, SERVICES, INTELLECTUAL PROPERTY OR OTHER 
+# PROPERTY OR RIGHTS GRANTED OR PROVIDED BY CARNEGIE MELLON UNIVERSITY 
+# PURSUANT TO THIS LICENSE (HEREINAFTER THE "DELIVERABLES") ARE ON AN 
+# "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO WARRANTIES OF ANY 
+# KIND, EITHER EXPRESS OR IMPLIED AS TO ANY MATTER INCLUDING, BUT NOT 
+# LIMITED TO, WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE, 
+# MERCHANTABILITY, INFORMATIONAL CONTENT, NONINFRINGEMENT, OR ERROR-FREE 
+# OPERATION. CARNEGIE MELLON UNIVERSITY SHALL NOT BE LIABLE FOR INDIRECT, 
+# SPECIAL OR CONSEQUENTIAL DAMAGES, SUCH AS LOSS OF PROFITS OR INABILITY 
+# TO USE SAID INTELLECTUAL PROPERTY, UNDER THIS LICENSE, REGARDLESS OF 
+# WHETHER SUCH PARTY WAS AWARE OF THE POSSIBILITY OF SUCH DAMAGES. 
+# LICENSEE AGREES THAT IT WILL NOT MAKE ANY WARRANTY ON BEHALF OF 
+# CARNEGIE MELLON UNIVERSITY, EXPRESS OR IMPLIED, TO ANY PERSON 
+# CONCERNING THE APPLICATION OF OR THE RESULTS TO BE OBTAINED WITH THE 
+# DELIVERABLES UNDER THIS LICENSE.
+#
+# Licensee hereby agrees to defend, indemnify, and hold harmless Carnegie 
+# Mellon University, its trustees, officers, employees, and agents from 
+# all claims or demands made against them (and any related losses, 
+# expenses, or attorney's fees) arising out of, or relating to Licensee's 
+# and/or its sub licensees' negligent use or willful misuse of or 
+# negligent conduct or willful misconduct regarding the Software, 
+# facilities, or other rights or assistance granted by Carnegie Mellon 
+# University under this License, including, but not limited to, any 
+# claims of product liability, personal injury, death, damage to 
+# property, or violation of any laws or regulations.
+#
+# Carnegie Mellon University Software Engineering Institute authored 
+# documents are sponsored by the U.S. Department of Defense under 
+# Contract F19628-00-C-0003. Carnegie Mellon University retains 
+# copyrights in all material produced under this contract. The U.S. 
+# Government retains a non-exclusive, royalty-free license to publish or 
+# reproduce these documents, or allow others to do so, for U.S. 
+# Government purposes only pursuant to the copyright license under the 
+# contract clause at 252.227.7013.
+#
+# @OPENSOURCE_HEADER_END@
+#######################################################################
+
+#######################################################################
+# 1.4
+# 2004/02/18 20:47:26
+# thomasm
+#######################################################################
+
+# rwflowpack start/control script
+#
+
+PATH=${PATH}:/usr/local/bin/
+PACKER_HOME=`echo ~silk`         # root dir of packing system
+PACKER_BIN=${PACKER_HOME}/bin    # path containing the packer binary
+DATA_ROOTDIR=${PACKER_HOME}/data # place to put data
+LOG_DIR=${PACKER_HOME}/log       # log directory
+USER=`whoami`                    # User this program runs as
+NETFLOW_PORT=9999                # port on which to listen for NetFlow PDUs
+INPUT_INDEX=18                   # SNMP input index of data from the ISP side
+NULL_INTERFACE=0                 # SNMP output index used by router to denote
+                                 # non-routed (e.g. acl) traffic (0 for CISCO)
+CONTACT=                         # contact list; currently unused
+SENSOR=S0                        # Sensor name; used in output file names;
+                                 # 1-5 alphanumerics with no underscores;
+                                 # starts w/upper, see also silk_site_generic.h
+
+#######################################################################
+
+RETVAL=0
+PROG_OPTIONS="--netflow-port=${NETFLOW_PORT} --in-index=${INPUT_INDEX} --null-interface=${NULL_INTERFACE} ${DATA_ROOTDIR} ${LOG_DIR} ${SENSOR}"
+EXTRA_OPTIONS=
+PROG=rwflowpack
+RUNDIR=${LOG_DIR}
+PIDFILE=${RUNDIR}/${PROG}.pid
+PROG_PATH=${PACKER_BIN}/${PROG}
+
+getPid() {
+   pid=`/bin/ps -e -o pid,command -u${USER}|grep ${PROG}|grep -v grep|awk '{print $1}'`
+   if [ "X$pid" = "X" ]  ; then
+        echo ""
+   else
+        echo $pid
+   fi
+   return
+}
+
+status() {
+    if [ $# -gt 0 ] ; then
+        doEcho=0
+    else
+        doEcho=1
+    fi
+    # first check if the process is running
+    pid=`/bin/ps -e -o pid,command -u${USER}|grep ${PROG}|grep -v grep|awk '{print $1}'`
+    if [ "X$pid" != "X" ] ; then
+        if [ -d /proc/$pid ] ; then
+            if [ $doEcho -eq 1 ] ; then
+                echo "${PROG} is running with pid $pid"
+            fi
+            return 0
+        fi
+    fi
+
+    # Next try $PIDFILE
+    if [ -f $PIDFILE ] ; then
+        read pid < ${PIDFILE}
+        if [ "$pid" != "" ] ; then
+            if [ $doEcho -eq 1 ] ; then
+                echo "${PROG} is dead but pid file exists"
+            fi
+            return 1
+        fi
+    fi
+    if [ $doEcho -eq 1 ] ; then echo "${PROG} is stopped" ; fi
+    return 3
+}
+
+start() {
+    (status 1)
+    pStat=$?
+    if [ $pStat -eq 0 ] ; then
+        status
+        return 0
+    fi
+
+    /bin/echo  -e "Starting ${PROG}:\t\c"
+    /bin/rm -f ${PIDFILE} 2> /dev/null
+
+    if [ X`whoami` = "X${USER}" ] ; then
+        ${PROG_PATH} $PROG_OPTIONS $EXTRA_OPTIONS &
+    else
+        su -  ${USER} -c "${PROG_PATH} $PROG_OPTIONS $EXTRA_OPTIONS &"
+    fi
+    RETVAL=$?
+    if [ "$RETVAL" -ne "0" ] ; then
+        echo "[Failed]"
+    else
+        PID=`getPid`
+        if [ "$PID" = "" ] ; then
+            echo "[Failed]"
+            RETVAL=1
+        else
+            echo $PID > ${PIDFILE}
+            echo '[OK]'
+        fi
+    fi
+    return $RETVAL
+}
+
+# Check if $pid is running
+checkpid() {
+    [ -d /proc/$1 ] && return 0
+    return 1
+}
+
+stop() {
+    Pid=`getPid`
+    if [ "X${Pid}" = "X" ] ; then
+        echo "${PROG} not running"
+        return 1
+    fi
+    /bin/echo -e "Stopping ${PROG}:\t\c"
+    /bin/kill -s INT $Pid
+    # because rwdaemon waits to reap children, wait before testing
+    echo WARNING sleeping for 10 seconds
+    sleep 10
+    if checkpid $Pid && sleep 5 \
+       && checkpid $Pid && sleep 5 \
+       && checkpid $Pid ; then
+       /bin/kill -s KILL $Pid
+       sleep 1
+    fi
+    (checkpid $Pid)
+    RETVAL=$?
+    [ "$RETVAL" -eq "1" ] && echo '[OK]' || echo '[FAILED]'
+    /bin/rm -f ${PIDFILE} 2> /dev/null
+    return $RETVAL
+}
+
+restart(){
+        (stop)
+        (start)
+}
+
+case "$1" in
+  start)
+        (start)
+        RETVAL=$?
+        ;;
+
+  stop)
+        (stop)
+        RETVAL=$?
+        ;;
+
+  restart)
+        (restart)
+        ;;
+
+  status)
+        (status)
+        RETVAL=$?
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+        RETVAL=1
+esac
+
+exit $RETVAL

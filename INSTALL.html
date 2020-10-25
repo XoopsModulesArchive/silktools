@@ -1,0 +1,227 @@
+<HTML><HEAD><TITLE>SiLK Analysis Suite: Installation Handbook</TITLE><META NAME="GENERATOR" CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"></HEAD>
+<BODY CLASS="article" BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF"
+VLINK="#840084" ALINK="#0000FF">
+<DIV CLASS="ARTICLE"><DIV CLASS="TITLEPAGE"><H1 CLASS="title"><A NAME="AEN2"></A>SiLK Analysis Suite: Installation Handbook</H1><H3 CLASS="corpauthor">CERT® Analysis Center</H3><DIV CLASS="revhistory"><TABLE WIDTH="100%" BORDER="0"><TR><TH ALIGN="LEFT" VALIGN="TOP" COLSPAN="3"><B>Revision History</B></TH></TR><TR><TD ALIGN="LEFT">Revision 1.1</TD><TD ALIGN="LEFT">2003-Dec-12</TD><TD ALIGN="LEFT"></TD></TR><TR><TD ALIGN="LEFT" COLSPAN="3"></TD></TR></TABLE></DIV><HR></DIV><DIV CLASS="section"><H1 CLASS="section"><A NAME="DocumentOverview"></A>Document Overview</H1><P ALIGN="justify">&#13;      This document is a summary of configuring and installing the
+      SiLK Analysis Suite.  This document also describes setting up
+      the rwflowpack daemon and its control script.  This document is
+      intended for individuals comfortable with the following tasks:
+      <P></P><UL><LI><P ALIGN="justify">Unix filesystem basics, including the basics
+        of modifying shell scripts</P></LI><LI><P ALIGN="justify">Compilation in a UNIX-like environment</P></LI></UL>
+    </P><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="documentoutline"></A>Outline</H2><P ALIGN="justify">&#13;        This document is broken into the following sections:
+        <P></P><OL TYPE="1"><LI><P ALIGN="justify">Overview (this section)</P></LI><LI><P ALIGN="justify">Software Inventory: A summary of the
+          software covered and installed using this document</P></LI><LI><P ALIGN="justify">Packing And Filesystem Overview</P></LI><LI><P ALIGN="justify">Configuration and Installation</P></LI></OL></P></DIV><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="generaldisclaimer"></A>General Disclaimer</H2><P ALIGN="justify">&#13;        The SiLK analysis suite is experimental software, not
+        production software.  While we have made efforts to ensure
+        functionality and ease of use, the CERT makes no promises as
+        regards functionality and reliability.  Enjoy the bleeding
+        edge and associated plasma.</P></DIV><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="RepositoryIdentifier"></A>Repository Identifier</H2><P ALIGN="justify">&#13;        $Id: INSTALL.html,v 1.2 2004/02/06 16:40:58 thomasm Exp $
+      </P></DIV></DIV><DIV CLASS="section"><HR><H1 CLASS="section"><A NAME="SoftwareInventory"></A>Software Inventory</H1><P ALIGN="justify">The software can be logically divided into two parts:
+      <P></P><OL TYPE="1"><LI><P ALIGN="justify">The packing system--the tools that collect,
+        pack, and store the IP-header data from NetFlow or similar
+        systems.  These tools are run by the system administrator
+        and/or by system startup.</P></LI><LI><P ALIGN="justify">The analysis tools--applications and utilities
+        used by the analysts that read the packed data and produce
+        some output.</P></LI></OL>
+    </P><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="PackingToolsList"></A>Packing Tools List</H2><P ALIGN="justify">&#13;        The packing system tools are listed here, and they are
+        discussed in detail in below.</P><DIV CLASS="formalpara"><P><B>rwflowpack. </B>Read NetFlow data and write rw-files</P></DIV><DIV CLASS="formalpara"><P><B>rwfpd. </B>Shell script wrapper to run rwflowpack</P></DIV></DIV><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="AnalysisToolsList"></A>Analysis Tools List</H2><P ALIGN="justify">&#13;        Most of the analysis tools are detailed in the Analysts'
+        Handbook and in manual pages; giving the
+        <TT CLASS="option">--help</TT> option to a tool will give you usage
+        information.  For completeness, we give a one-line description
+        of each tool here.</P><DIV CLASS="formalpara"><P><B>buildset. </B>Create a binary set file from list of IPs</P></DIV><DIV CLASS="formalpara"><P><B>mapsid. </B>Map sensor name to sensor number or vice versa</P></DIV><DIV CLASS="formalpara"><P><B>num2dot. </B>Convert an integer IP to dotted-decimal notation</P></DIV><DIV CLASS="formalpara"><P><B>readset. </B>Print the IP addresses in a binary set file</P></DIV><DIV CLASS="formalpara"><P><B>rwaddrcount. </B>Count activity by IP address</P></DIV><DIV CLASS="formalpara"><P><B>rwappend. </B>Append rw-files to existing file</P></DIV><DIV CLASS="formalpara"><P><B>rwcat. </B>Concatenate multiple rw-files</P></DIV><DIV CLASS="formalpara"><P><B>rwcount. </B>Print traffic summary across time</P></DIV><DIV CLASS="formalpara"><P><B>rwcut. </B>Print selected fields of rw-records</P></DIV><DIV CLASS="formalpara"><P><B>rwfglob. </B>See what files the given fglob options will read</P></DIV><DIV CLASS="formalpara"><P><B>rwfileinfo. </B>Print information about an rw-file</P></DIV><DIV CLASS="formalpara"><P><B>rwfilter. </B>Choose which rw-records to process</P></DIV><DIV CLASS="formalpara"><P><B>rwrtd2split. </B>Convert between packed RW-file formats</P></DIV><DIV CLASS="formalpara"><P><B>rwset. </B>Generate a set of unique IP addresses</P></DIV><DIV CLASS="formalpara"><P><B>rwset-union. </B>Perform union operations on rwset files</P></DIV><DIV CLASS="formalpara"><P><B>rwsort. </B>Sort records on one or more fields</P></DIV><DIV CLASS="formalpara"><P><B>rwstats. </B>Print a battery of statics</P></DIV><DIV CLASS="formalpara"><P><B>rwswapbytes. </B>Convert endianness of an RW-file</P></DIV><DIV CLASS="formalpara"><P><B>rwtotal. </B>Count how much traffic matched specific keys</P></DIV><DIV CLASS="formalpara"><P><B>rwuniq. </B>Count occurances of key in dataset</P></DIV><DIV CLASS="formalpara"><P><B>setintersect. </B>Perform intersection operations on set files</P></DIV></DIV></DIV><DIV CLASS="section"><HR><H1 CLASS="section"><A NAME="PackingAndFilesystemOverview"></A>Packing And Filesystem Overview</H1><DIV CLASS="section"><H2 CLASS="section"><A NAME="Filesystem"></A>Filesystem</H2><P ALIGN="justify"> The packing system records all data in flat files written
+      by rwflowpack.  While users can access the flat files directly,
+      the files written by flowpack are intended to be read using the
+      globbing system described in the Analysts' Handbook.  When a
+      user specifies globbing parameters to an analysis application,
+      the fglob library converts the parameters into a set of
+      filenames, which are then read sequentially by the
+      application. </P><P ALIGN="justify"> The primary configuration issue when configuring the
+      Analysis Suite is having the packing system write the data to
+      the location the fglob library expects to find it.  The
+      directory rwflowpack writes to is determined at run time, but
+      the globbing system uses a directory root set at compile time.
+      This directory's value is given as the SILK_DATA_ROOTDIR
+      parameter to the configure command, as described in the
+      configuration section below. </P><DIV CLASS="section"><HR><H3 CLASS="section"><A NAME="Directoryhierarchy"></A>Directory hierarchy</H3><P ALIGN="justify">&#13;          The directory root for the packed data files is
+          <TT CLASS="replaceable"><I>dataRootdir</I></TT>, underneath
+          <TT CLASS="replaceable"><I>dataRootdir</I></TT> are four directories:
+        </P><DIV CLASS="formalpara"><P><B><TT CLASS="replaceable"><I>dataRootdir</I></TT>/inweb. </B>
+            Data that rwflowpack has determined to be incoming traffic
+            (as described below) that is most-likely web-related (the
+            protocol is TCP and the source or destination port is one
+            of 80, 443, or 8080).
+          </P></DIV><DIV CLASS="formalpara"><P><B><TT CLASS="replaceable"><I>dataRootdir</I></TT>/in. </B>
+            Data that rwflowpack has determined to be incoming traffic
+            that is non-web.
+          </P></DIV><DIV CLASS="formalpara"><P><B><TT CLASS="replaceable"><I>dataRootdir</I></TT>/outweb. </B>
+            Data that rwflowpack has determined to be outgoing web
+            traffic.
+          </P></DIV><DIV CLASS="formalpara"><P><B><TT CLASS="replaceable"><I>dataRootdir</I></TT>/out. </B>
+             Data that rwflowpack has determined to be outgoing
+             non-web traffic.
+           </P></DIV><P ALIGN="justify"> Under each of these directories are date directories,
+        in the form YYYY/MM/DD.  For example, output web files for
+        October 12th, 2003 are recorded in
+        <TT CLASS="replaceable"><I>dataRootdir</I></TT>/outweb/2003/10/12/
+        </P><P ALIGN="justify"> Filenames include all of this information, and are
+        written in the form: </P><P ALIGN="justify">&#13;        <TT CLASS="replaceable"><I>type</I></TT>-<TT CLASS="replaceable"><I>sensorName</I></TT>_YYYYMMDD.HH
+        </P><P ALIGN="justify">The <TT CLASS="replaceable"><I>type</I></TT> in the file name
+        will correspond to the directroy name, and will be one of iw
+        (incoming web), in (incoming non-web), ow (outgoing-web) or
+        out (outgoing non-web).  The
+        <TT CLASS="replaceable"><I>sensorName</I></TT> is a command line option
+        to rwflowpack.  When multiple instances of rwflowpack write to
+        a single shared filesystem, the
+        <TT CLASS="replaceable"><I>sensorName</I></TT> is used to avoid file
+        name collisions. </P></DIV></DIV><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="PackingTools"></A>Packing Tools</H2><DIV CLASS="section"><H3 CLASS="section"><A NAME="rwflowpack"></A>rwflowpack</H3><P ALIGN="justify">&#13;          The standard packing tool is rwflowpack, which listens on a
+          port for NetFlow PDUs from a router, categorizes the data
+          into one of four types (incoming-web, incoming-nonweb,
+          outgoing-web, outgoing-nonweb), and stores the data in
+          packed flat files.
+        </P><P ALIGN="justify">rwflowpack is invoked as (all arguments are
+        required):</P><P ALIGN="justify"><B CLASS="command">rwflowpack</B>  {--in-index=<TT CLASS="replaceable"><I>N</I></TT>} {--netflow-port=<TT CLASS="replaceable"><I>N</I></TT>} {<TT CLASS="replaceable"><I>dataRootdir</I></TT>} {<TT CLASS="replaceable"><I>logDir</I></TT>} {<TT CLASS="replaceable"><I>sensorName</I></TT>}</P><DIV CLASS="formalpara"><P><B>--in-index=<TT CLASS="replaceable"><I>N</I></TT>. </B>
+            input interface number: This is the interface number where
+            incoming flows enter the router.  All records which have
+            this input interface are considered "incoming"; all other
+            records are outgoing.
+          </P></DIV><DIV CLASS="formalpara"><P><B>--netflow-port=<TT CLASS="replaceable"><I>N</I></TT>. </B>
+            This is the UDP port number where rwflowpack will listen
+            for the NetFlow PDUs from the router.
+          </P></DIV><DIV CLASS="formalpara"><P><B><TT CLASS="replaceable"><I>dataRootdir</I></TT>. </B>
+            This is the root directory for storing raw flows.  As
+            described above, the packing tool will create
+            subdirectories below this directory based on the data
+            received.
+          </P></DIV><DIV CLASS="formalpara"><P><B><TT CLASS="replaceable"><I>logDir</I></TT>. </B>
+            Logging directory; the packer writes log files to this
+            directory.
+          </P></DIV><DIV CLASS="formalpara"><P><B><TT CLASS="replaceable"><I>sensorName</I></TT>. </B>
+            This should be a one- to five-character string that begins
+            with an uppercase letter.  The string may only contain
+            alpha-numeric characters, and it must not contain an
+            underscore.  The sensorName is used to name files coming
+            from a specific instance of the rwflowpack application.
+            The sensorName can be a mnemonic for the sensor location,
+            the ISP, etc.  If you are not feeling creative, you can
+            use the form S<TT CLASS="replaceable"><I>n</I></TT>, i.e., S0, S1,
+            ..., S254.
+            To enable filtering by sensorID, you need to add these
+            sensorNames to the sensorInfo[] array in the
+            src/include/silk_site_generic.h file.  The software will
+            work without this addition, but you will not be able to
+            filter by sensorID.  Use the mapsid application to map
+            between sensorNames and sensorIDs.
+          </P></DIV><P ALIGN="justify"> rwflowpack is a daemon, so once invoked it becomes a
+        background process, a pid will be written to the log
+        directory, but after that, rwflowpack is largely untouchable
+        except through an explicit kill signal. </P></DIV><DIV CLASS="section"><HR><H3 CLASS="section"><A NAME="rwfpd"></A>rwfpd</H3><P ALIGN="justify"> To provide easier use in UNIX-like environments, the
+        rwflowpack package includes a daemon script, rwfpd.  rwfpd can
+        be added to a machine's boot sequence to invoke rwflowpack
+        automatically. </P><P ALIGN="justify"> rwfpd is invoked as </P><P ALIGN="justify"><B CLASS="command">rwfpd</B>  {start | stop | restart | status}</P><DIV CLASS="formalpara"><P><B>start. </B>starts a daemon</P></DIV><DIV CLASS="formalpara"><P><B>stop. </B>will stop the instance indicated by the pid</P></DIV><DIV CLASS="formalpara"><P><B>restart. </B>will refresh a daemon </P></DIV><DIV CLASS="formalpara"><P><B>status. </B> will provide a status message as to whether the daemon
+          is running. </P></DIV></DIV></DIV></DIV><DIV CLASS="section"><HR><H1 CLASS="section"><A NAME="Installation"></A>Configuration and Installation</H1><P ALIGN="justify">Installation is a four-step process.  These steps are:
+    <P></P><OL TYPE="1"><LI><P ALIGN="justify">Configure the router.</P></LI><LI><P ALIGN="justify">Configure the machine.</P></LI><LI><P ALIGN="justify">Configure the software.</P></LI><LI><P ALIGN="justify">Compile and install the tools.</P></LI></OL>
+    </P><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="RouterConfiguration"></A>Configure the Router</H2><P ALIGN="justify">The host and port number to which the router will send the
+      NetFlow PDUs is given by the Cisco IOS command</P><PRE CLASS="programlisting">&#13;        ip flow-export [ip-address] [port]
+      </PRE><P ALIGN="justify">To enable NetFlow, issue the IOS command
+      <PRE CLASS="programlisting">&#13;        ip route-cache flow
+      </PRE>
+      </P><P ALIGN="justify">The timestamps on the records will be based on the
+      timestamps received from the router.  We suggest using ntp to
+      minimize drift in the router's clock:  
+      <PRE CLASS="programlisting">&#13;        ntp server [ip-address]
+      </PRE>
+      </P><P ALIGN="justify">rwflowpack needs to know which of the router's interfaces
+      is the incoming interface, i.e., which interface faces the
+      Internet.  To determine this information, you can use one of the
+      following methods:  
+      <P></P><OL TYPE="1"><LI><P ALIGN="justify">You can use SNMP queries to get this information.
+          Several sites mention the snmpwalk command: <A HREF="http://www.net-snmp.org/tutorial-5/commands/" TARGET="_top">http://www.net-snmp.org/tutorial-5/commands/</A>
+          </P></LI><LI><P ALIGN="justify">You can install the BBNFC (Bare Bones NetFlow
+          Collector, <A HREF="http://www.gadgets.co.nz/ni/documentation/v1/collector.shtml" TARGET="_top">http://www.gadgets.co.nz/ni/documentation/v1/collector.shtml</A>) or Flow-Tools (<A HREF="http://www.splintered.net/sw/flow-tools/" TARGET="_top">http://www.splintered.net/sw/flow-tools/</A>) utilities
+          to capture the NetFlow.  Then, given that you know which IP
+          addresses are considered "inside" your network use that to
+          determine with interfaces are IN and OUT.</P></LI></OL>
+      </P><P ALIGN="justify">When the router is rebooted, it can reassign these
+      interface numbers; obviously this creates a problem as IN and
+      OUT may now be reversed.  To get around this problem, you can
+      tell the router to use permanent settings for the interface
+      numbers.  See either of these links for instructions: <A HREF="http://www.cisco.com/en/US/products/hw/switches/ps708/products_configuration_guide_chapter09186a0080160a7a.html" TARGET="_top">http://www.cisco.com/en/US/products/hw/switches/ps708/products_configuration_guide_chapter09186a0080160a7a.html</A>, <A HREF="http://www.cisco.com/univercd/cc/td/doc/product/software/ios121/121newft/121t/121t5/dt5ifidx.htm" TARGET="_top">http://www.cisco.com/univercd/cc/td/doc/product/software/ios121/121newft/121t/121t5/dt5ifidx.htm</A>. </P></DIV><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="ConfigureMachine"></A>Configure the Machine</H2><DIV CLASS="section"><H3 CLASS="section"><A NAME="SocketBuffer"></A>Adjust Maximum Socket Buffer Size</H3><P ALIGN="justify">NetFlow traffic tends to be "bursty": you make an HTTP
+        request and several servers may respond feeding you pages,
+        images, and ads.  To handle this, it is important for the
+        machine that receives the NetFlow packets to have a
+        large-enough socket buffer.  rwflowpack will attempt to
+        increase its socket buffer to 8MB, and back-off until it finds
+        a socket buffer size that the kernel will allow. </P><P ALIGN="justify">To increase the allowable maximum socket buffer size on
+        a Linux system:
+        <PRE CLASS="programlisting">&#13;          echo 8388608 &#62; /proc/sys/net/core/rmem_max
+        </PRE>
+        </P><P ALIGN="justify">On Solaris, issue
+        <PRE CLASS="programlisting">&#13;          ndd -set /dev/udp udp_max_buf 8388608
+        </PRE> to modify a running system, and add that
+        line to /etc/rc2.d/S99ndd to make the change on
+        reboot. </P></DIV><DIV CLASS="section"><HR><H3 CLASS="section"><A NAME="DirectoryHierarchy"></A>Directory Hierarchy</H3><P ALIGN="justify">There are three directory roots to be considered:</P><DIV CLASS="formalpara"><P><B>DATA_ROOTDIR. </B>The directory where files are written by rwflowpack
+          and where the analysis applications expect to find the
+          data.</P></DIV><DIV CLASS="formalpara"><P><B>PACKER_HOME. </B>The directory for maintaining the packer itself, that
+          is the packer application and its logfiles.</P></DIV><DIV CLASS="formalpara"><P><B>SILK_PATH. </B>
+            The root directory for the SILK suite; there should be two
+            directories under SILK_PATH:
+            <P></P><UL><LI><P ALIGN="justify">${SILK_PATH}/bin</P></LI><LI><P ALIGN="justify">${SILK_PATH}/lib</P></LI></UL>
+            This can be a well-known location, e.g. /usr/local.
+          </P></DIV><P ALIGN="justify"> Once these locations are decided, create the
+        directories if required. </P></DIV></DIV><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="ConfigureSoftware"></A>Configuring the Software</H2><DIV CLASS="section"><H3 CLASS="section"><A NAME="ConfigureRWFPD"></A>Configure rwfpd</H3><P ALIGN="justify"> rwfpd is an sh script, to configure it, modify the
+        parameters noted below, which are specified near the top of
+        the rwfpd script:</P><PRE CLASS="programlisting">&#13;          PATH=${PATH}:/usr/local/bin
+          PACKER_HOME=`echo ~silk`
+          PACKER_BIN=${PACKER_HOME}/bin
+          DATA_ROOTDIR=${PACKER_HOME}/data
+          LOG_DIR=${PACKER_HOME}/log
+          NETFLOW_PORT=9999
+          INPUT_INDEX=18
+          CONTACT=
+          SENSOR=S0001
+          USER=`whoami`
+        </PRE><DIV CLASS="formalpara"><P><B>PATH. </B>Standard shell executable search
+          path. </P></DIV><DIV CLASS="formalpara"><P><B>PACKER_HOME. </B>Convenience variable for
+          setting PACKER_BIN, DATA_ROOTDIR, and LOG_DIR</P></DIV><DIV CLASS="formalpara"><P><B>PACKER_BIN. </B>Directory containing
+          rwflowpack binary</P></DIV><DIV CLASS="formalpara"><P><B>DATA_ROOTDIR. </B>Root directory for packed
+          data files; does not have to be subdirectory if PACKER_HOME.
+          Corresponds to the <TT CLASS="replaceable"><I>dataRoodir</I></TT>
+          argument to rwflowpack.</P></DIV><DIV CLASS="formalpara"><P><B>LOG_DIR. </B>Directory in which to write
+          logging files.  Corresponds to the
+          <TT CLASS="replaceable"><I>logDir</I></TT> argument to
+          rwflowpack.</P></DIV><DIV CLASS="formalpara"><P><B>NETFLOW_PORT. </B>Port on which to listen for
+          NetFlow packets.  Corresponds to the
+          <TT CLASS="option">--netflow-port</TT> argument to
+          rwflowpack.</P></DIV><DIV CLASS="formalpara"><P><B>INPUT_INDEX. </B>Input interface on the
+          router.  Corresponds to the <TT CLASS="option">--in-index</TT>
+          argument to rwflowpack.</P></DIV><DIV CLASS="formalpara"><P><B>CONTACT. </B>Currently ignored; persons to
+          e-mail in case of problems.  Should be a comma-separated
+          list of email addresses, containing no spaces</P></DIV><DIV CLASS="formalpara"><P><B>SENSOR. </B>Name of sensor; used to generate
+          file names under DATA_ROOTDIR.  Should contain one to five
+          alpha-numerics and begin with an uppercase letter; it must
+          not contain an underscore.  Corresponds to the
+          <TT CLASS="replaceable"><I>sensorName</I></TT> argument to
+          rwflowpack.</P></DIV><DIV CLASS="formalpara"><P><B>USER. </B>User running this script.  This is
+          used to check for the status of the rwflowpack, and the
+          script will attempt to su to this user when starting
+          rwflowpack.</P></DIV><P ALIGN="justify">rwfpd assumes your version of 'ps' understands SysV
+        style arguments.  If it doesn't, you will need to modify the
+        script.</P></DIV><DIV CLASS="section"><HR><H3 CLASS="section"><A NAME="ConfigureSource"></A>Configure the Source</H3><P ALIGN="justify">We make rudimentary use of autoconf to configure our
+        software.  Currently, it only builds a C header; if your
+        system needs different libraries than the systems we typically
+        build on, you will need to modify Makefiles by hand.</P><P ALIGN="justify"> At the top of the source tree in the silktools
+        directory, issue the command</P><PRE CLASS="programlisting">&#13;          ./configure SILK_DATA_ROOTDIR=<TT CLASS="replaceable"><I>DATA_ROOTDIR</I></TT>
+        </PRE><P ALIGN="justify">where <TT CLASS="replaceable"><I>DATA_ROOTDIR</I></TT> is the
+        same value you used in the rwfpd script.  This will run some
+        tests on your platform and create src/include/silk_config.h
+        with the results of these tests.</P></DIV></DIV><DIV CLASS="section"><HR><H2 CLASS="section"><A NAME="CompilingAndInstallingTheTools"></A>Compiling and Installing The Tools</H2><P ALIGN="justify">To compile the tools, you will need to the GNU version of
+      the make program.  Type 'make' in the silktools directory.  This
+      will make the analysis tools, utilities, and the rwflowpack
+      binary.</P><P ALIGN="justify">If that succeeds, install the analysis tools:</P><PRE CLASS="programlisting">&#13;        cp ./bin/* $SILK_PATH/bin
+        rm $SILK_PATH/bin/rwflowpack
+        cp ./lib/*.so $SILK_PATH/lib
+      </PRE><P ALIGN="justify">Install rwflowpack and its controller script:</P><PRE CLASS="programlisting">&#13;        cp ./bin/rwflowpack       $PACKER_HOME/bin
+        cp ./src/rw/rwpack/rwfpd  $PACKER_HOME/bin
+      </PRE><P ALIGN="justify">Run rwfpd:
+      <PRE CLASS="programlisting">&#13;        rwfpd start
+      </PRE>
+      </P></DIV></DIV></DIV></BODY></HTML>
